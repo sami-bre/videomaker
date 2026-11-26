@@ -8,15 +8,14 @@ All lines go in one call so the model sees the whole story (speakers, tone, gend
 """
 
 import json
-import os
 import sys
 
 import requests
-from dotenv import load_dotenv
 
 from pipeline import storyboard as sb
 from pipeline.common import addis, openrouter
 from pipeline.common.http import ApiError
+from pipeline.common.workspace import load_keys, require_key
 
 # Chosen by a native speaker (EXPERIMENTS.md E2, E3). Addis AI only covers its own languages.
 ADDIS_LANGUAGES = {"am", "om"}
@@ -72,11 +71,11 @@ def translate(prompt, language, keys):
     """Return (model, translations). Tries Addis AI first, then Gemini 2.5 Flash on OpenRouter."""
     if language in ADDIS_LANGUAGES:
         try:
-            reply = addis.chat(os.environ["ADDIS_API_KEY"], prompt, target_language=language, stage="script")
+            reply = addis.chat(require_key("ADDIS_API_KEY"), prompt, target_language=language, stage="script")
             return addis.CHAT_MODEL, parse_translations(reply, keys)
         except (ApiError, requests.RequestException, KeyError, ValueError) as exc:
             print(f"Addis AI failed ({exc}); falling back to {FALLBACK_MODEL}")
-    reply = openrouter.chat(os.environ["OPENROUTER_API_KEY"], FALLBACK_MODEL, prompt, stage="script")
+    reply = openrouter.chat(require_key("OPENROUTER_API_KEY"), FALLBACK_MODEL, prompt, stage="script")
     return FALLBACK_MODEL, parse_translations(reply, keys)
 
 
@@ -100,5 +99,5 @@ def run(path=sb.DEFAULT_PATH):
 
 
 if __name__ == "__main__":
-    load_dotenv()
+    load_keys()
     run(sys.argv[1] if len(sys.argv) > 1 else sb.DEFAULT_PATH)

@@ -1,6 +1,6 @@
 STORYBOARD ?= storyboard.json
 
-.PHONY: film setup validate radio shots-draft costs smoke test
+.PHONY: film setup validate radio shots-draft costs smoke test serve web web-dev
 
 # The whole pipeline: storyboard -> script -> narration -> keyframes -> shots -> music -> film.
 film:
@@ -31,3 +31,14 @@ smoke:
 
 test:
 	uv run pytest -q
+
+# The web service: API + the built frontend on http://localhost:8000 (run `make web` first).
+serve:
+	uv run uvicorn server.app:app --port 8000
+
+web:
+	cd web && npm ci && npm run build
+
+# Frontend with hot reload on http://localhost:5173; it talks to `make serve`.
+web-dev:
+	cd web && npm run dev

@@ -14,9 +14,8 @@ import sys
 
 from pipeline import assemble, endcard, music, shots
 from pipeline import storyboard as sb
-from pipeline.common.cache import OUTPUTS_DIR
+from pipeline.common.workspace import outputs_dir, relative
 
-OUT_DIR = OUTPUTS_DIR / "film"
 FPS = 24
 SUBTITLE_STYLE = "FontName=Ubuntu,Bold=1,PrimaryColour=&H00222222,OutlineColour=&H00DCE8E4,BorderStyle=1,Outline=2,Shadow=0"
 # (width, height, subtitle wrap width, subtitle size and margin). Vertical subtitles sit
@@ -25,6 +24,10 @@ ORIENTATIONS = {
     "16x9": (1280, 720, 42, "FontSize=17,MarginV=18"),
     "9x16": (720, 1280, 26, "FontSize=10,MarginV=70"),
 }
+
+
+def film_dir():
+    return outputs_dir() / "film"
 
 
 def media_duration_s(path):
@@ -73,9 +76,9 @@ def normalize_loudness(in_path, out_path, target_lufs=assemble.FINAL_LUFS, true_
 
 def render(storyboard, timeline, audio, orientation):
     width, height, wrap, subtitle_size = ORIENTATIONS[orientation]
-    srt = OUT_DIR / f"subtitles-{orientation}.srt"
+    srt = film_dir() / f"subtitles-{orientation}.srt"
     assemble.write_srt(timeline, srt, wrap)
-    card = endcard.render(storyboard, OUT_DIR / f"endcard-{orientation}.mp4", width, height, assemble.END_CARD_S)
+    card = endcard.render(storyboard, film_dir() / f"endcard-{orientation}.mp4", width, height, assemble.END_CARD_S)
 
     inputs, chains = [], []
     for n, (plan, shot) in enumerate(zip(timeline, storyboard["shots"])):
@@ -96,12 +99,12 @@ def render(storyboard, timeline, audio, orientation):
         + f"concat=n={count}:v=1:a=0,subtitles={srt.name}:fontsdir={endcard.FONT_DIR}:force_style='{SUBTITLE_STYLE},{subtitle_size}'[story];"
         + "[story][card]concat=n=2:v=1:a=0,format=yuv420p[v]"
     )
-    out = OUT_DIR / f"film-{orientation}.mp4"
+    out = film_dir() / f"film-{orientation}.mp4"
     subprocess.run(
         ["ffmpeg", "-y", "-loglevel", "error", *inputs, "-filter_complex", filters,
          "-map", "[v]", "-map", f"{count + 1}:a", "-c:v", "libx264", "-crf", "18", "-preset", "medium",
          "-r", str(FPS), "-c:a", "copy", "-movflags", "+faststart", "-shortest", out.name],
-        cwd=OUT_DIR, check=True,
+        cwd=film_dir(), check=True,
     )
     return out
 
@@ -112,17 +115,17 @@ def run(path=sb.DEFAULT_PATH):
     track = music.chosen_track(storyboard)
     if missing or track is None or not track.exists():
         raise sb.StoryboardError(f"need a clip for every shot (missing: {missing}) and a chosen, generated score; run pipeline.shots and pipeline.music")
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    film_dir().mkdir(parents=True, exist_ok=True)
 
     timeline = assemble.build_timeline(storyboard, assemble.line_durations(storyboard))
     total = timeline[-1]["end"] + assemble.END_CARD_S
-    voice = assemble.render_narration_track(storyboard, timeline, OUT_DIR / "narration.wav", total)
-    mix = assemble.duck_mix(voice, track, OUT_DIR / "mix.m4a", total)
-    audio = normalize_loudness(mix, OUT_DIR / "soundtrack.m4a")
+    voice = assemble.render_narration_track(storyboard, timeline, film_dir() / "narration.wav", total)
+    mix = assemble.duck_mix(voice, track, film_dir() / "mix.m4a", total)
+    audio = normalize_loudness(mix, film_dir() / "soundtrack.m4a")
 
     for orientation in ORIENTATIONS:
         out = render(storyboard, timeline, audio, orientation)
-        print(f"film {orientation}: {media_duration_s(out):.1f} s -> {out.relative_to(sb.ROOT)}")
+        print(f"film {orientation}: {media_duration_s(out):.1f} s -> {relative(out)}")
 
 
 if __name__ == "__main__":

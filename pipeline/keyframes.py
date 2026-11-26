@@ -8,15 +8,13 @@ character's reference regenerates every keyframe that shows that character.
 """
 
 import hashlib
-import os
 import subprocess
 import sys
-
-from dotenv import load_dotenv
 
 from pipeline import storyboard as sb
 from pipeline.common import cloudflare
 from pipeline.common.cache import cached_path
+from pipeline.common.workspace import load_keys, relative, require_key
 
 STAGE = "keyframes"
 KEYFRAME_SIZE = (1280, 720)
@@ -94,7 +92,6 @@ def run(path=sb.DEFAULT_PATH):
     missing = [s["id"] for s in storyboard["shots"] if "image_prompt" not in s]
     if "style" not in storyboard or missing:
         raise sb.StoryboardError(f"keyframes need a top-level `style` and an `image_prompt` on every shot (missing: {missing})")
-    account_id, token = os.environ["CLOUDFLARE_ACCOUNT_ID"], os.environ["CLOUDFLARE_API_TOKEN"]
     made = skipped = 0
 
     used = sorted({c for shot in storyboard["shots"] for c in shot.get("characters", [])})
@@ -105,12 +102,12 @@ def run(path=sb.DEFAULT_PATH):
         else:
             width, height = REFERENCE_SIZE
             cloudflare.generate_image(
-                account_id, token, reference_prompt(storyboard, character_id),
+                require_key("CLOUDFLARE_ACCOUNT_ID"), require_key("CLOUDFLARE_API_TOKEN"), reference_prompt(storyboard, character_id),
                 width=width, height=height, seed=storyboard["characters"][character_id].get("seed", 0),
                 stage=STAGE, out_path=out,
             )
             made += 1
-            print(f"reference {character_id}: {out.relative_to(sb.ROOT)}")
+            print(f"reference {character_id}: {relative(out)}")
         if not reference_input_path(storyboard, character_id).exists():
             shrink(out, reference_input_path(storyboard, character_id))
 
@@ -121,16 +118,16 @@ def run(path=sb.DEFAULT_PATH):
             continue
         width, height = KEYFRAME_SIZE
         cloudflare.generate_image(
-            account_id, token, keyframe_prompt(storyboard, shot),
+            require_key("CLOUDFLARE_ACCOUNT_ID"), require_key("CLOUDFLARE_API_TOKEN"), keyframe_prompt(storyboard, shot),
             width=width, height=height, seed=shot.get("seed", 0),
             references=[reference_input_path(storyboard, c) for c in shot.get("characters", [])],
             stage=STAGE, out_path=out,
         )
         made += 1
-        print(f"keyframe {shot['id']}: {out.relative_to(sb.ROOT)}")
+        print(f"keyframe {shot['id']}: {relative(out)}")
     print(f"keyframes: {made} generated, {skipped} cached")
 
 
 if __name__ == "__main__":
-    load_dotenv()
+    load_keys()
     run(sys.argv[1] if len(sys.argv) > 1 else sb.DEFAULT_PATH)

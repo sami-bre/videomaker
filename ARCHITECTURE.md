@@ -17,7 +17,7 @@ One file, `storyboard.json`, is the contract between every stage. Each stage is 
  every model call ──► runs.jsonl ──► COSTS.md (make costs) and the end-card credits
 ```
 
-Run it all with `make film` (`pipeline/run.py`), or any stage alone with `uv run python -m pipeline.<stage>`.
+Run it all with `make film` (`pipeline/run.py`), some stages with `uv run python -m pipeline.run --stages narration,film`, or one stage alone with `uv run python -m pipeline.<stage>`.
 
 ## The contract: `storyboard.json`
 
@@ -99,10 +99,40 @@ Sound (`assemble.render_narration_track`, `duck_mix`, `film.normalize_loudness`)
 
 ## Tests
 
-`make test` runs 13 tests, aimed at the logic that would silently ruin a film or waste money:
+`make test` runs 18 tests, aimed at the logic that would silently ruin a film, waste money or leak a key:
 - schema typos, duplicate ids and refusing to save an invalid storyboard;
 - the cache hash;
 - the timeline, subtitle splitting and clip fitting;
 - the clip-length guard;
 - which clip the film uses;
-- a reference change regenerating only the keyframes that show that character.
+- a reference change regenerating only the keyframes that show that character;
+- the web service: a project's files stay in its own folder, the estimate counts only what is not cached, keys never reach a log, an invalid storyboard is never saved, and one run per project.
+
+## Web service
+
+```
+React + Vite page  ──HTTP + server-sent events──►  FastAPI (server/)  ──one subprocess per run──►  python -m pipeline.run
+ (keys kept in the browser)                         (projects on disk)                                env: that user's keys + its folder
+```
+
+- **A project is a folder:** `data/projects/<32 hex chars>/` with its own `storyboard.json`, `outputs/`, `runs.jsonl` and `jobs/<run>.log`. The long random id in the link is the only access control. There are no accounts.
+- **The workspace.** `pipeline/common/workspace.py` decides where outputs and the run log go. The CLI uses the repo. A run subprocess gets `VIDEOMAKER_WORKSPACE`. The server, which serves many projects from one process, switches folder per request with `workspace.use()`, so the same path helpers (`keyframe_path`, `best_clip`, …) list any project's files.
+- **Keys.** The browser sends them in an `X-Provider-Keys` header with each run. They go only into that run's subprocess environment, never to disk, and every line it prints is scrubbed before it is logged or streamed. With `VIDEOMAKER_SERVICE=1`, the pipeline never reads the server's `.env`, so a missing key fails instead of spending the server's money. Stages read a key only when they are about to call a model, so a fully cached run needs no keys.
+- **Before a run.** `pipeline/estimate.py` counts, per stage, what would be made and what would be reused, with a list-price estimate and the keys needed. The server refuses a run that lacks a needed key or has a clip too short for its narration (`shots.length_problems`).
+- **Remix.** The example's hash-named outputs (narration, keyframes, shots, music) are hard-linked into the new project, and its `runs.jsonl` is copied so the end-card credits still know which model made each reused file. Folders written in place (`film/`, `assemble/`) are copied, never linked, so a remix can't overwrite the example's film.
+- **Limits.** At most 2 runs at once on the server (FFmpeg is CPU-heavy); others queue. One run per project. Bring-your-own keys limit spend, so there are no quotas or project expiry.
+- **Progress.** `pipeline.run --events` prints one `@@{json}` line per stage start, end or failure. The server turns those and every log line into server-sent events.
+
+| Method | Path | Does |
+|---|---|---|
+| GET | `/api/showcase` | Example storyboard and the URLs of its outputs |
+| GET | `/api/schema` | The storyboard schema, for live checks in the browser |
+| POST | `/api/projects` | `{"source": "example" or "blank"}` → `{"id"}` |
+| GET, PUT | `/api/projects/{id}/storyboard` | PUT validates; 422 with the error list |
+| GET | `/api/projects/{id}/outputs` | Current file per shot and line, music candidates, films |
+| POST | `/api/projects/{id}/estimate` | `{"stages", "quality"}` → to make, cached, cost, keys needed |
+| POST | `/api/projects/{id}/runs` | Starts a run; 400 for a missing key, 409 if one is going |
+| GET | `/api/runs/{run}/events` | Server-sent events: log lines, stage progress, final status |
+| POST | `/api/runs/{run}/cancel` | Stops the run |
+| GET | `/api/projects/{id}/costs` | Spend in this project, from its `runs.jsonl` |
+| GET | `/files/{id}/outputs/...` | Output files, with range requests for video |

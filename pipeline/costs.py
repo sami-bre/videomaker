@@ -10,14 +10,14 @@ from collections import defaultdict
 
 from pipeline import keyframes, music, narration, shots
 from pipeline import storyboard as sb
-from pipeline.common.runlog import RUNS_FILE
+from pipeline.common.workspace import runs_file
 
 COSTS_FILE = sb.ROOT / "COSTS.md"
 HOSTED_GPU_STAGES = {"shots", "music"}
 
 
 def load_runs():
-    return [json.loads(line) for line in RUNS_FILE.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [json.loads(line) for line in runs_file().read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
 def money(value):

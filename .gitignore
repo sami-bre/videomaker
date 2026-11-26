@@ -6,3 +6,4 @@ __pycache__/
 outputs/film/narration.wav
 outputs/music/narration-track.wav
 .claude/settings.local.json
+data/

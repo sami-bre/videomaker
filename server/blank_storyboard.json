@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "title": "Untitled film",
+  "logline": "One sentence about your film.",
+  "narration_language": "am",
+  "style": "Describe the look of every picture here: medium, line, colours, what to avoid.",
+  "motion_style": "Keep the exact look of the first frame. Gentle, simple motion.",
+  "video_engine": "grok",
+  "music": {"caption": "Describe the music: instruments, mood, tempo.", "seeds": [1, 2, 3]},
+  "end_card": {"title": "Made with AI"},
+  "characters": {
+    "narrator": {"description": "Who they are and exactly how they look.", "seed": 11}
+  },
+  "voices": {
+    "narrator": {"voice": "Algenib", "style": "Warm and relaxed, like telling a story to a friend."}
+  },
+  "shots": [
+    {
+      "id": "s01",
+      "reason": "Why this shot is in the film.",
+      "description": "What happens in this shot.",
+      "characters": ["narrator"],
+      "image_prompt": "What the first frame shows.",
+      "seed": 101,
+      "motion_prompt": "What moves, and how the camera moves.",
+      "clip_s": 8,
+      "duration_s": 8,
+      "lines": [{"speaker": "narrator", "en": "The first line of your story."}]
+    }
+  ]
+}

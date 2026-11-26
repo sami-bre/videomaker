@@ -8,16 +8,14 @@ Candidates are cached by caption, length, seed and model.
 """
 
 import math
-import os
 import sys
-
-from dotenv import load_dotenv
 
 from pipeline import assemble
 from pipeline import storyboard as sb
 from pipeline.common import wavespeed
 from pipeline.common.cache import cached_path
 from pipeline.common.runlog import logged_call
+from pipeline.common.workspace import load_keys, relative, require_key
 
 STAGE = "music"
 MODEL = "wavespeed-ai/ace-step-1.5"
@@ -52,7 +50,7 @@ def generate(key, storyboard, seed):
         saved = wavespeed.download(wavespeed.run_task(key, MODEL, body), out.with_suffix(""))
         if saved != out:
             saved.rename(out)
-        record["output"] = str(out.relative_to(sb.ROOT))
+        record["output"] = str(relative(out))
     return out
 
 
@@ -60,17 +58,16 @@ def run(path=sb.DEFAULT_PATH):
     storyboard = sb.load(path)
     if "music" not in storyboard:
         raise sb.StoryboardError("storyboard has no `music` cue")
-    key = os.environ["WAVESPEED_API_KEY"]
     for seed in storyboard["music"]["seeds"]:
         out = candidate_path(storyboard, seed)
         status = "cached" if out.exists() else "generated"
         if not out.exists():
-            generate(key, storyboard, seed)
-        print(f"seed {seed}: {status} -> {out.relative_to(sb.ROOT)}")
+            generate(require_key("WAVESPEED_API_KEY"), storyboard, seed)
+        print(f"seed {seed}: {status} -> {relative(out)}")
     chosen = storyboard["music"].get("chosen_seed")
     print(f"music: {film_length_s(storyboard)} s per candidate; chosen seed: {chosen if chosen is not None else 'none yet'}")
 
 
 if __name__ == "__main__":
-    load_dotenv()
+    load_keys()
     run(sys.argv[1] if len(sys.argv) > 1 else sb.DEFAULT_PATH)

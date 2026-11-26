@@ -12,19 +12,16 @@ keyframe, so the film always has a picture for every shot.
 
 import argparse
 import hashlib
-import os
+import math
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
-
-from dotenv import load_dotenv
-
-import math
 
 from pipeline import assemble, keyframes
 from pipeline import storyboard as sb
 from pipeline.common import openrouter, wavespeed
 from pipeline.common.cache import cached_path
 from pipeline.common.runlog import logged_call
+from pipeline.common.workspace import load_keys, relative, require_key
 
 STAGE = "shots"
 # (model, resolution, USD per output second, USD per input image). Wan's prices are from
@@ -99,12 +96,12 @@ def generate(storyboard, engine, model, resolution, shot, inputs, out):
     """Make one clip with the given engine. Returns the billed USD if the provider reports it."""
     keyframe = keyframes.keyframe_path(storyboard, shot)
     if engine == "wan":
-        key = os.environ["WAVESPEED_API_KEY"]
+        key = require_key("WAVESPEED_API_KEY")
         body = {"image": wavespeed.upload(key, keyframe), "prompt": inputs["motion_prompt"], "duration": inputs["clip_s"], "seed": inputs["seed"]}
         wavespeed.download(wavespeed.run_task(key, model, body), out.with_suffix("")).rename(out)
         return None
     _, cost = openrouter.generate_video(
-        os.environ["OPENROUTER_API_KEY"], model, inputs["motion_prompt"], keyframe,
+        require_key("OPENROUTER_API_KEY"), model, inputs["motion_prompt"], keyframe,
         duration=inputs["clip_s"], resolution=resolution, out_path=out,
     )
     return cost
@@ -121,7 +118,7 @@ def animate(storyboard, shot, quality, engine):
             billed = generate(storyboard, engine, model, resolution, shot, inputs, out)
             if billed is not None:
                 record["billed_usd"] = record["list_price_usd"] = billed
-            record["output"] = str(out.relative_to(sb.ROOT))
+            record["output"] = str(relative(out))
         return f"{shot['id']}: {engine} {quality} -> {out.name}"
     except Exception as exc:
         fallback = fallback_path(storyboard, shot, quality, engine)
@@ -169,7 +166,7 @@ def run(path=sb.DEFAULT_PATH, quality="draft", only=None, engine=None):
 
 
 if __name__ == "__main__":
-    load_dotenv()
+    load_keys()
     parser = argparse.ArgumentParser()
     parser.add_argument("storyboard", nargs="?", default=sb.DEFAULT_PATH)
     parser.add_argument("--final", action="store_true", help="render 720p instead of 480p drafts")

@@ -12,7 +12,7 @@ import sys
 
 from pipeline import narration
 from pipeline import storyboard as sb
-from pipeline.common.cache import OUTPUTS_DIR
+from pipeline.common.workspace import outputs_dir, relative
 
 SHOT_LEAD_IN_S = 0.3
 LINE_GAP_S = 0.35
@@ -170,7 +170,7 @@ def render_radio_cut(storyboard, timeline, out_dir):
 def run(path=sb.DEFAULT_PATH):
     storyboard = sb.load(path)
     timeline = build_timeline(storyboard, line_durations(storyboard))
-    out_dir = OUTPUTS_DIR / "assemble"
+    out_dir = outputs_dir() / "assemble"
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "timeline.json").write_text(json.dumps(timeline, ensure_ascii=False, indent=2), encoding="utf-8")
     write_srt(timeline, out_dir / "radio_cut.srt")
@@ -180,7 +180,7 @@ def run(path=sb.DEFAULT_PATH):
         planned = next(s["duration_s"] for s in storyboard["shots"] if s["id"] == shot["id"])
         length = shot["end"] - shot["start"]
         print(f"{shot['id']}: {length:5.1f} s" + (f"  (stretched from {planned:g} s)" if length > planned + 0.01 else ""))
-    print(f"radio cut: {timeline[-1]['end']:.1f} s -> {video.relative_to(sb.ROOT)}")
+    print(f"radio cut: {timeline[-1]['end']:.1f} s -> {relative(video)}")
 
 
 if __name__ == "__main__":

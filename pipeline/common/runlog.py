@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
-RUNS_FILE = Path(__file__).resolve().parents[2] / "runs.jsonl"
+from pipeline.common.workspace import runs_file
 
 
 @contextmanager
@@ -37,15 +37,15 @@ def logged_call(stage, provider, model, params, seed=None, list_price_usd=None, 
         raise
     finally:
         record["latency_s"] = round(time.monotonic() - start, 3)
-        with RUNS_FILE.open("a", encoding="utf-8") as f:
+        with runs_file().open("a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
 def models_by_output_name():
     """Map each output file name to the model whose successful call wrote it, from runs.jsonl."""
     made_by = {}
-    if RUNS_FILE.exists():
-        for line in RUNS_FILE.read_text(encoding="utf-8").splitlines():
+    if runs_file().exists():
+        for line in runs_file().read_text(encoding="utf-8").splitlines():
             record = json.loads(line)
             if record.get("status") == "ok" and isinstance(record.get("output"), str) and record["output"].startswith(("outputs/", "/")):
                 made_by[Path(record["output"]).name] = record["model"]

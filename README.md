@@ -32,6 +32,20 @@ make film         # storyboard.json -> outputs/film/film-16x9.mp4 and film-9x16.
 
 `make film` runs every stage in order: `script → narration → keyframes → shots → music → film`. This repo includes `outputs/` and `runs.jsonl`, so a fresh clone reuses every generated file and makes **no paid model calls**. Only the FFmpeg edit runs, which takes about 2 minutes. Delete `outputs/` to regenerate everything from scratch.
 
+### Or use the web app
+
+```bash
+make web          # build the frontend (needs Node 20+)
+make serve        # http://localhost:8000
+```
+
+One page. The top shows the example film and how each shot was made. The studio below lets anyone remix it or start blank:
+- edit shots, lines and settings in forms (or raw JSON), checked against the schema as you type;
+- run each stage with a button that first says what it will make, what it will reuse, and the rough cost;
+- watch the run's log live, listen to each voice line and music candidate, pick one, and download both films.
+
+There are no accounts. Each project lives at its own unguessable link. **People bring their own API keys**: keys stay in the browser and go only to that run's pipeline process, and they are blanked out of every log. A remix shares the example's generated files, so changing one line pays for one line. `docker build -t videomaker .` packages the whole thing; mount a volume at `/data` for projects. See [ARCHITECTURE.md](ARCHITECTURE.md#web-service).
+
 ### API keys (`.env`)
 
 | Key | Used for | Free? |
@@ -67,7 +81,7 @@ make radio         # narration-only "radio cut" for a first audience test
 make shots-draft   # cheap 480p clips to check motion before paying for 720p
 make costs         # rebuild COSTS.md from runs.jsonl
 make smoke         # call every provider once and log it
-make test          # 13 tests on the logic that would silently break a film
+make test          # 18 tests on the logic that would silently break a film or leak a key
 ```
 
 ## Make your own film
@@ -84,9 +98,11 @@ No story details live in the code.
 ```
 storyboard.json        the contract: shots, prompts, seeds, narration, voices, music, framing
 schema/                JSON Schema for the storyboard, validated on every load
-pipeline/              one module per stage, plus run.py (everything) and costs.py
-  common/              logging, retries, caching, provider clients
-tests/                 13 tests
+pipeline/              one module per stage, plus run.py (everything), estimate.py and costs.py
+  common/              logging, retries, caching, workspace, provider clients
+server/                FastAPI web service: projects, runs, outputs
+web/                   React + Vite frontend: showcase and studio on one page
+tests/                 18 tests
 runs.jsonl             one line per model call: model, params, seed, latency, cost, output
 outputs/               every generated image, audio file and video, kept for inspection
 assets/fonts/          end-card font and its licence

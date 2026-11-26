@@ -8,16 +8,14 @@ run the script stage first.
 """
 
 import base64
-import os
 import sys
 import wave
-
-from dotenv import load_dotenv
 
 from pipeline import storyboard as sb
 from pipeline.common import gemini
 from pipeline.common.cache import cached_path
 from pipeline.common.http import ApiError
+from pipeline.common.workspace import load_keys, relative, require_key
 
 STAGE = "narration"
 
@@ -59,7 +57,7 @@ def synthesize(key, inputs, out_path):
         if not audio:
             raise ApiError(f"no audio in response: {str(data)[:300]}")
         out_path.write_bytes(base64.b64decode(audio[-1]["data"]))
-        return out_path.relative_to(sb.ROOT)
+        return relative(out_path)
 
     return gemini.interact_with_fallback(key, gemini.TTS_MODELS, body, stage=STAGE, params=inputs, handle=handle)
 
@@ -72,7 +70,6 @@ def run(path=sb.DEFAULT_PATH):
     if untranslated:
         raise sb.StoryboardError(f"lines without `spoken` text in {', '.join(untranslated)}; run pipeline.script first")
 
-    key = os.environ["GEMINI_API_KEY"]
     made = skipped = 0
     for shot in storyboard["shots"]:
         for i, line in enumerate(shot["lines"]):
@@ -80,12 +77,12 @@ def run(path=sb.DEFAULT_PATH):
             if out_path.exists():
                 skipped += 1
                 continue
-            model, _ = synthesize(key, line_inputs(storyboard, line), out_path)
+            model, _ = synthesize(require_key("GEMINI_API_KEY"), line_inputs(storyboard, line), out_path)
             made += 1
             print(f"{shot['id']}-{i} {line['speaker']}: {wav_duration_s(out_path):.1f} s ({model})")
     print(f"narration: {made} generated, {skipped} cached")
 
 
 if __name__ == "__main__":
-    load_dotenv()
+    load_keys()
     run(sys.argv[1] if len(sys.argv) > 1 else sb.DEFAULT_PATH)

@@ -1,8 +1,6 @@
 import hashlib
 import json
-from pathlib import Path
-
-OUTPUTS_DIR = Path(__file__).resolve().parents[2] / "outputs"
+from pipeline.common.workspace import outputs_dir
 
 
 def input_hash(inputs):
@@ -17,6 +15,6 @@ def cached_path(stage, name, inputs, suffix):
     If the file already exists, the stage can skip the model call. Changing any input
     gives a new hash and so a new file; old files stay for inspection.
     """
-    directory = OUTPUTS_DIR / stage
+    directory = outputs_dir() / stage
     directory.mkdir(parents=True, exist_ok=True)
     return directory / f"{name}-{input_hash(inputs)}{suffix}"
