@@ -134,6 +134,11 @@
   html.dark {
     color-scheme: dark;
     }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+      }
+    }
   * {
     scrollbar-width: thin;
     scrollbar-color: color-mix(in oklch, var(--muted-foreground) 45%, transparent) transparent;
