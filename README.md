@@ -1,15 +1,30 @@
-# When I Was Your Age
+# videomaker
 
-An 88-second AI-made short film, narrated in Amharic with English subtitles. Every Ethiopian kid has heard their dad's "when I was your age, I walked to school…". This is that story, taken to its comic extreme. The young dad crosses the Blue Nile past a hungry crocodile, tiptoes under an elephant in Chebera Churchura, climbs the Simien cliffs past bored geladas, and hops across the lava of Erta Ale. When he finally arrives, wet and smoking, the teacher says: **"You're late again!"**
+A storyboard-driven AI video pipeline. You describe a short film in one file, `storyboard.json`: its shots, narration lines, look, characters, voices and music. `make film` turns it into a finished, narrated, scored and subtitled video in 16:9 and 9:16.
 
-The film comes out of a small studio in code. One file, `storyboard.json`, describes the whole film. A pipeline of stages turns it into translated narration, keyframes, moving shots, a score, and a finished edit in 16:9 and 9:16. Change one line of the storyboard, rerun, and only that part is regenerated.
+```
+storyboard.json ─► script ─► narration ─► keyframes ─► shots ─► music ─► film
+                   (translate) (TTS per line) (reference sheet,  (image-to-  (score     (cut, duck, subtitles,
+                                              then 1 per shot)   video)     candidates) end card, 16:9 + 9:16)
+```
+
+- **One contract.** Every stage reads the storyboard, which is validated against a JSON Schema on every load, and writes its own outputs. No story details live in the code.
+- **Only what changed is regenerated.** Each output is named by a hash of exactly the inputs it uses. Edit one line, rerun, and one narration file is remade, not ten.
+- **Every model call is logged.** `runs.jsonl` records model, params, seed, latency and cost. COSTS.md and the end-card credits are built from it.
+- **It keeps going when a model fails.** It retries, falls back to the next model, makes a Ken Burns shot when video fails, and refuses to render a clip too short for its narration before any money is spent.
+
+## Example film: *When I Was Your Age*
+
+The repo ships with the storyboard and every generated file for an 88-second comedy, narrated in Amharic with English subtitles. Every Ethiopian kid has heard their dad's "when I was your age, I walked to school…". This is that story, taken to its comic extreme. The young dad crosses the Blue Nile past a hungry crocodile, tiptoes under an elephant in Chebera Churchura, climbs the Simien cliffs past bored geladas, and hops across the lava of Erta Ale. When he finally arrives, wet and smoking, the teacher says: **"You're late again!"**
+
+The finished films are `outputs/film/film-16x9.mp4` and `outputs/film/film-9x16.mp4`.
 
 ## Run it
 
 You need [uv](https://docs.astral.sh/uv/), FFmpeg with libass (`ffmpeg -filters | grep subtitles`), and Python 3.12+.
 
 ```bash
-git clone <this-repo-url> && cd videomaker
+git clone https://github.com/sami-bre/videomaker.git && cd videomaker
 make setup        # installs dependencies, creates .env from .env.example
 # fill in the API keys in .env (see below)
 make film         # storyboard.json -> outputs/film/film-16x9.mp4 and film-9x16.mp4
@@ -29,7 +44,7 @@ make film         # storyboard.json -> outputs/film/film-16x9.mp4 and film-9x16.
 
 ## What it costs
 
-Measured in `runs.jsonl` and summarised in [COSTS.md](COSTS.md) (`make costs`):
+For the example film, measured in `runs.jsonl` and summarised in [COSTS.md](COSTS.md) (`make costs`):
 - **The calls behind the finished film: about $2.70**, mostly the 8 Grok Imagine video clips at 720p.
 - **Everything we ran while building it**, including experiments, failures and retries: about $5.
 - Narration, keyframes and the edit cost nothing (free tiers and FFmpeg).
