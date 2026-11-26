@@ -13,11 +13,27 @@ storyboard.json ─► script ─► narration ─► keyframes ─► shots ─
 - **Every model call is logged.** `runs.jsonl` records model, params, seed, latency and cost. COSTS.md and the end-card credits are built from it.
 - **It keeps going when a model fails.** It retries, falls back to the next model, makes a Ken Burns shot when video fails, and refuses to render a clip too short for its narration before any money is spent.
 
+| | |
+|---|---|
+| **Live app** | <https://videomaker.samibre.dev> (watch the film, then remix it or start your own; bring your own API keys) |
+| **The film** | [9:16](https://videomaker.samibre.dev/files/example/outputs/film/film-9x16.mp4) · [16:9](https://videomaker.samibre.dev/files/example/outputs/film/film-16x9.mp4) |
+| **Report** | [report/report.pdf](report/report.pdf) (source: [report/REPORT.md](report/REPORT.md), rebuilt with `make report`) |
+| **How-to guide** | <https://videomaker.samibre.dev/docs/> |
+
 ## Example film: *When I Was Your Age*
 
 The repo ships with the storyboard and every generated file for an 88-second comedy, narrated in Amharic with English subtitles. Every Ethiopian kid has heard their dad's "when I was your age, I walked to school…". This is that story, taken to its comic extreme. The young dad crosses the Blue Nile past a hungry crocodile, tiptoes under an elephant in Chebera Churchura, climbs the Simien cliffs past bored geladas, and hops across the lava of Erta Ale. When he finally arrives, wet and smoking, the teacher says: **"You're late again!"**
 
 The finished films are `outputs/film/film-16x9.mp4` and `outputs/film/film-9x16.mp4`.
+
+## Who did what
+
+| Who | What |
+|---|---|
+| **Samuel Birhanu** (me) | The idea, the audience and the intent. The story and the English script. Every creative and technical decision, each with its reason in [DESIGN.md](DESIGN.md) and [EXPERIMENTS.md](EXPERIMENTS.md): an invented dad instead of my real father, cartoon over realism, the doodle style with a kuncho and a gabi, Addis AI over Gemini for Amharic, Grok Imagine at 720p, music seed 301. Reviewing the Amharic as a native speaker, including hand edits such as `በስብሼ እና ጨሼ` and the teacher's line. Both user tests. Building the pipeline as reusable software, and deploying the web app. |
+| **Claude Code** (coding agent) | Wrote most of the code and first drafts of the docs, under my direction. I reviewed its work and redirected it, for example rejecting GLM and expensive models for translation, asking for a guard after the clips came out shorter than the narration, and asking for the web app. Commits it helped write carry a `Co-Authored-By` line. |
+| **AI models** | Made the film's content: Addis AI (translation), Gemini TTS (voices), FLUX.2 klein (pictures), Grok Imagine (motion), ACE-Step 1.5 (music). Every call is in `runs.jsonl`, and the end card lists them, read from that log. |
+| **Friends** | Feedback in two user tests ([DESIGN.md](DESIGN.md)). Yusuf's note on the past habitual tense changed the script. |
 
 ## Run it
 
@@ -93,7 +109,7 @@ make radio         # narration-only "radio cut" for a first audience test
 make shots-draft   # cheap 480p clips to check motion before paying for 720p
 make costs         # rebuild COSTS.md from runs.jsonl
 make smoke         # call every provider once and log it
-make test          # 19 tests on the logic that would silently break a film or leak a key
+make test          # 20 tests on the logic that would silently break a film or leak a key
 ```
 
 ## Make your own film
@@ -114,7 +130,8 @@ pipeline/              one module per stage, plus run.py (everything), estimate.
   common/              logging, retries, caching, workspace, provider clients
 server/                FastAPI web service: projects, runs, outputs
 web/                   React + Vite frontend: showcase and studio on one page
-tests/                 19 tests
+tests/                 20 tests
+report/                the report (REPORT.md -> report.pdf with `make report`)
 runs.jsonl             one line per model call: model, params, seed, latency, cost, output
 outputs/               every generated image, audio file and video, kept for inspection
 assets/fonts/          end-card font and its licence
@@ -129,3 +146,4 @@ docs/research/         provider research: prices, free tiers, licences, sources
 | [FAILURES.md](FAILURES.md) | What broke, what we tried, what fixed it |
 | [COSTS.md](COSTS.md) | Measured latency and spend per stage and model, generated from the log |
 | [ETHICS.md](ETHICS.md) | Consent, licences, labelling |
+| [report/report.pdf](report/report.pdf) | The challenge report: audience, hardest problem, practices tested, what's next |

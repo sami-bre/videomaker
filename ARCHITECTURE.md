@@ -99,7 +99,7 @@ Sound (`assemble.render_narration_track`, `duck_mix`, `film.normalize_loudness`)
 
 ## Tests
 
-`make test` runs 19 tests, aimed at the logic that would silently ruin a film, waste money or leak a key:
+`make test` runs 20 tests, aimed at the logic that would silently ruin a film, waste money or leak a key:
 - schema typos, duplicate ids and refusing to save an invalid storyboard;
 - the cache hash;
 - the timeline, subtitle splitting and clip fitting;
