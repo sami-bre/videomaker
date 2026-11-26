@@ -32,7 +32,7 @@ What broke, what we tried, and what fixed it. Newest first. Evidence lives in `r
 
 **Fix.** `MAX_RETRY_WAIT_S = 30` in `pipeline/common/http.py`. A longer requested wait now fails at once, so `interact_with_fallback` moves to the next model. The rerun finished in about 20 s.
 
-**Side effect.** With `gemini-3.8-flash-tts` rate-limited, the teacher's line came from `gemini-3.8-flash-lite-tts` both times. The native speaker found its pronunciation weaker. The film keeps it for now. A retry on the main model, or Addis AI TTS, is the fix if user tests flag it.
+**Side effect.** With `gemini-3.8-flash-tts` rate-limited, the teacher's line came from `gemini-3.8-flash-lite-tts` both times. The native speaker found the first version badly pronounced. A rewrite of the text, on the same fallback model, fixed it, so the cause was the text, not the model (EXPERIMENTS.md E10).
 
 **Evidence that caching held.** Before the rerun we saved an md5 of every narration file. After it, only the 3 lines whose text changed (s05, s06, s08 teacher) had new files, and all 7 old files were byte-for-byte unchanged.
 

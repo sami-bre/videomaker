@@ -154,3 +154,42 @@ Style A is kept for comparison in `outputs/keyframes/compare/style-a-*` (contact
 **Result.** The director chose **seed 301**: "mainly because the ending is good." The film ends on the teacher's line and then the end card, so a strong musical ending carries the punchline.
 
 **Decision.** `music.chosen_seed: 301`, with `why_chosen` stored in the storyboard so the reason travels with the choice.
+
+## E9. Fill the narration gap by slowing clips a little, re-rendering only what can't stretch (2026-11-26)
+
+**Hypothesis.** The 8 Grok clips were all 8 s, but the narration made 6 shots longer (FAILURES.md, "Video clips were 21 s shorter than the narration"). Slowing a clip to 0.8× of normal speed still looks like natural motion in this doodle style. So only shots that would need more than that have to be re-rendered, not all 6 long ones.
+
+**Change.**
+- One rule for filling a shot, `assemble.fit_clip`: trim a clip that is too long, slow a clip that is a little short down to `MIN_CLIP_SPEED = 0.8`, and call anything shorter `too_short`.
+- A guard, `shots.length_problems`, that measures every shot's real length from the narration files (`assemble.shot_lengths`) before any clip is paid for, and refuses clips that are `too_short`.
+- Re-rendered only the shots the guard refused.
+
+**Result.** Shot lengths from the narration against the 8 s clips:
+
+| Shot | Shot length | 8 s clip would play at | What we did |
+|---|---|---|---|
+| s01, s04, s07, s08 | 12.3–12.8 s | 0.63–0.65× | Re-rendered at `clip_s: 13` |
+| s05 | 10.03 s | 0.797× | Re-rendered at `clip_s: 10` |
+| s06 | 9.5 s | 0.84× | Kept the 8 s clip, slowed |
+| s02, s03 | 7.5–7.8 s | (longer than needed) | Kept, trimmed |
+
+The guard's first real run caught s05, which we had missed by eye: 0.797× is just under the 0.8 limit. The 5 re-renders cost $1.91 in Grok calls (4 × $0.40 + $0.31, from `runs.jsonl`), 43–71 s each. The final film is 88.0 s, and every shot is covered. The director watched the cut with s06 slowed to 0.84× and didn't flag it.
+
+**Decision.** Keep `MIN_CLIP_SPEED = 0.8` and the guard. `clip_s` is now set per shot from its narration, not one guess for all. The cost of the mistake was the first 8 Grok clips at the wrong length ($2.00): a check that cheap belongs before the expensive call, not after.
+
+## E10. The teacher's line: was the weak pronunciation the fallback voice model or the text? (2026-11-26)
+
+**Hypothesis.** The teacher's line was the only line voiced by `gemini-3.8-flash-lite-tts`, because `gemini-3.8-flash-tts` returned HTTP 429 (rate limit) and the fallback chain moved on (FAILURES.md, "Narration rerun hung on a Gemini TTS rate limit"). The native speaker heard it as badly pronounced. Our first guess: the cheaper fallback model is the cause, so the fix is waiting for the main model.
+
+**Change.** We changed the text, not the model. The director rewrote the line from `እንደገና አርፈድክ!` ("you're late again!") to `ዛሬም እንደገና አረፈድክ!` ("late again today!"). That added `ዛሬም` for a sharper punchline and corrected the spelling `አርፈድክ` → `አረፈድክ`. Same voice (`Kore`), same style. The main model was still rate-limited (two more 429s in `runs.jsonl` at 08:23), so the new line came from the same fallback model again.
+
+**Result.** From `runs.jsonl`:
+
+| Time (UTC) | Model | Text | Director's verdict |
+|---|---|---|---|
+| 08:10 | `gemini-3.8-flash-lite-tts` | `እንደገና አርፈድክ!` | "did not sound well pronounced" |
+| 08:23 | `gemini-3.8-flash-lite-tts` | `ዛሬም እንደገና አረፈድክ!` | "this sounds good" |
+
+Same model, different text, problem gone. **Our first guess was wrong:** the text, very likely the misspelled `አርፈድክ`, caused the bad pronunciation, not the fallback model. What we can't say: we never heard the main model read the new text, so we can't rank the two models on it.
+
+**Decision.** The film keeps the Flash-Lite line, and the fallback chain stays: a rate limit no longer stops the narration, and the fallback's output was good enough. The end card names both TTS models, because `endcard.credit_lines` reads which model made each file from `runs.jsonl`. Lesson for a new film: when a TTS line sounds wrong, check the spelling of the text before blaming the model.
