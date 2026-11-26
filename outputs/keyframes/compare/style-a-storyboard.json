@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "title": "When I Was Your Age",
+  "logline": "A dad tells his kid how he got to school: miles of highland, the Blue Nile, a crumbling bridge, the Simien cliffs and the lava lake of Erta Ale. When he finally arrives, the teacher says: \"You're late again!\"",
+  "narration_language": "am",
+  "translation_notes": "The dad's story (shots s02 to s08) is a routine he went through every school day as a boy, not one trip. Use the past habitual for his actions (for example ይመለከቱኝ ነበር, 'they used to watch me'), never a one-time past. The kid's line in s01 and the teacher's line in s08 are single moments. Write the Simien Mountains as ሰሜን ተራሮች and the park as ጨበራ ጩርጩራ.",
+  "style": "Flat hand-painted cartoon illustration in a children's picture-book style. Warm earthy Ethiopian palette: ochre, terracotta, deep green, sky blue. Soft textured gouache shading, simple rounded shapes, clean dark outlines, gentle comic exaggeration. Not 3D, not anime, not photorealistic. No text, letters or writing anywhere.",
+  "characters": {
+    "young_dad": {
+      "seed": 11,
+      "description": "a 10-year-old Ethiopian boy, thin, warm brown skin, short curly black hair, big expressive eyes, faded light-blue short-sleeved school shirt, khaki shorts, barefoot, carrying a small stack of school exercise books tied together with brown string"
+    },
+    "dad": {
+      "seed": 12,
+      "description": "an Ethiopian man of about 45, warm brown skin, short curly black hair greying at the temples, short neat greying beard, kind proud eyes, cream button-up long-sleeved shirt, brown trousers, brown leather shoes"
+    },
+    "kid": {
+      "seed": 13,
+      "description": "a 15-year-old Ethiopian boy, warm brown skin, short black hair, grey hoodie, jeans, white sneakers, headphones around his neck, holding a smartphone"
+    },
+    "teacher": {
+      "seed": 14,
+      "description": "a stern Ethiopian village schoolteacher, a woman in her fifties, tall, brown skin, hair wrapped in a white cotton scarf, round glasses, dark green cardigan over a long white dress, holding a long thin stick"
+    }
+  },
+  "voices": {
+    "dad": {
+      "voice": "Algenib",
+      "style": "a warm Ethiopian dad in his forties telling a tall tale to his teenage son: proud, playful, slightly dramatic, unhurried"
+    },
+    "kid": {
+      "voice": "Puck",
+      "style": "a bored, whiny teenage boy complaining"
+    },
+    "teacher": {
+      "voice": "Kore",
+      "style": "a stern village schoolteacher, sharp and loud, scolding"
+    }
+  },
+  "shots": [
+    {
+      "id": "s01",
+      "reason": "Sets up the moment every viewer knows before the story starts.",
+      "description": "A teenager slumps on a sofa with a phone, complaining. His dad leans in from the doorway.",
+      "place": "A modern apartment in Addis Ababa",
+      "characters": [
+        "dad",
+        "kid"
+      ],
+      "image_prompt": "Inside a modern Addis Ababa apartment living room in the afternoon. The teenage son slumps dramatically on a sofa in the centre, phone in hand, rolling his eyes. His father leans in from a doorway just behind the sofa, eyebrows raised, about to tell a story. Medium-wide shot, both faces near the centre.",
+      "seed": 101,
+      "duration_s": 7,
+      "lines": [
+        {
+          "speaker": "kid",
+          "en": "Dad, school is so far. It's a ten-minute walk!",
+          "spoken": "አባዬ፣ ትምህርት ቤት በጣም ይርቃል። አስር ደቂቃ የእግር መንገድ ነው!",
+          "spoken_from_en": "Dad, school is so far. It's a ten-minute walk!"
+        },
+        {
+          "speaker": "dad",
+          "en": "Ten minutes? When I was your age...",
+          "spoken": "አስር ደቂቃ? እኔ በአንተ እድሜ እያለሁማ…",
+          "spoken_from_en": "Ten minutes? When I was your age..."
+        }
+      ]
+    },
+    {
+      "id": "s02",
+      "reason": "Who, where and when: the flashback begins.",
+      "description": "Dawn. A young boy steps out of a round thatched hut with his books tied in string. A rooster crows.",
+      "place": "A highland village",
+      "characters": [
+        "young_dad"
+      ],
+      "image_prompt": "Dawn in a highland village. The boy steps out of a round thatched tukul hut, centred in the frame, his string-tied books under his arm. A rooster on the fence beside him is still asleep. Soft pink and gold sky, misty eucalyptus trees behind.",
+      "seed": 102,
+      "duration_s": 7,
+      "lines": [
+        {
+          "speaker": "dad",
+          "en": "Every morning, I would wake up before the rooster, tie my books with string, and start walking.",
+          "spoken": "እኔማ በየቀኑ ዶሮ ሳይጮህ እነሳና መጽሐፎቼን በገመድ አሥሬ መሄድ እጀምር ነበር።",
+          "spoken_from_en": "Every morning, I would wake up before the rooster, tie my books with string, and start walking."
+        }
+      ]
+    },
+    {
+      "id": "s03",
+      "reason": "Shows the distance, the part of the story that is true.",
+      "description": "Extreme wide shot. A tiny barefoot boy on an endless path through green hills and eucalyptus trees.",
+      "place": "The Ethiopian highlands",
+      "characters": [
+        "young_dad"
+      ],
+      "image_prompt": "Extreme wide shot of endless rolling green Ethiopian highland hills with terraced fields and eucalyptus groves under a huge sky. A tiny barefoot boy walks a winding dirt path exactly in the centre of the frame.",
+      "seed": 103,
+      "duration_s": 7,
+      "lines": [
+        {
+          "speaker": "dad",
+          "en": "Not ten minutes. Hours. Hill after hill, with no shoes.",
+          "spoken": "አስር ደቂቃ አይደለም። ሰዓታት ነው የምሄደው። ጫማም የለኝ፣ ኮረብታ በኮረብታ እየወጣሁ።",
+          "spoken_from_en": "Not ten minutes. Hours. Hill after hill, with no shoes."
+        }
+      ]
+    },
+    {
+      "id": "s04",
+      "reason": "The first exaggeration: the danger begins.",
+      "description": "The boy wades across a wide brown river, books held high over his head. A crocodile watches him.",
+      "place": "The Blue Nile",
+      "characters": [
+        "young_dad"
+      ],
+      "image_prompt": "The boy wades chest-deep across the wide muddy brown Blue Nile river, centred in the frame, holding his books high above his head with both arms. Just behind him, a large crocodile's eyes and snout poke out of the water, watching him hungrily. Green riverbanks and acacia trees.",
+      "seed": 104,
+      "duration_s": 8,
+      "lines": [
+        {
+          "speaker": "dad",
+          "en": "Then came the Blue Nile. I would hold my books over my head. There was always a hungry crocodile. I never stopped.",
+          "spoken": "ከዛ ደግሞ ዓባይ ወንዝ አለ። መጽሐፎቼን ከራሴ በላይ አደርግና እሻገር ነበር። ሁሌም የተራበ አዞ ይኖራል። እኔ ግን ፈጽሞ አላቆምም ነበር።",
+          "spoken_from_en": "Then came the Blue Nile. I would hold my books over my head. There was always a hungry crocodile. I never stopped."
+        }
+      ]
+    },
+    {
+      "id": "s05",
+      "reason": "A real Ethiopian wilderness many viewers have only heard of; elephants raise the danger after the crocodile.",
+      "description": "In a dense green jungle, the boy tiptoes under the belly of a giant elephant, books held tight. Black-and-white colobus monkeys watch from the trees.",
+      "place": "Chebera Churchura National Park, southwest Ethiopia",
+      "characters": [
+        "young_dad"
+      ],
+      "image_prompt": "A dense green jungle of giant trees and hanging vines. A huge African elephant stands across the path, and the boy tiptoes underneath its belly in the centre of the frame, clutching his books. Black-and-white colobus monkeys with long white tails watch from the branches above.",
+      "seed": 105,
+      "duration_s": 8,
+      "lines": [
+        {
+          "speaker": "dad",
+          "en": "Next, the Chebera Churchura jungle. Elephants used to block the path, so I would walk right under them.",
+          "spoken": "በመቀጠል ጨበራ ጩርጩራ ጫካ አለ። ዝሆኖች መንገዴን ይዘጉብኝ ነበር፣ እኔም ከሥራቸው አልፌ እሄድ ነበር።",
+          "spoken_from_en": "Next, the Chebera Churchura jungle. Elephants used to block the path, so I would walk right under them."
+        }
+      ]
+    },
+    {
+      "id": "s06",
+      "reason": "Height, and the geladas make it funny and recognisable.",
+      "description": "The boy climbs jagged green cliffs. Gelada monkeys with red chests sit on a ledge and watch him, unimpressed.",
+      "place": "The Simien Mountains",
+      "characters": [
+        "young_dad"
+      ],
+      "image_prompt": "The boy climbs a jagged, steep green cliff face of the Simien Mountains, centred in the frame, with dramatic sharp peaks and deep valleys behind him. On a rock ledge beside him, three gelada monkeys with bright red hourglass-shaped chest patches and shaggy brown manes sit watching him, bored and unimpressed.",
+      "seed": 106,
+      "duration_s": 8,
+      "lines": [
+        {
+          "speaker": "dad",
+          "en": "Then I would climb the Simien mountains. The geladas just used to watch me, without helping.",
+          "spoken": "ከዛ የሰሜን ተራሮችን እወጣ ነበር። ጭላዳ ዝንጀሮዎች ዝም ብለው ያዩኝ ነበር እንጂ አይረዱኝም።",
+          "spoken_from_en": "Then I would climb the Simien mountains. The geladas just used to watch me, without helping."
+        }
+      ]
+    },
+    {
+      "id": "s07",
+      "reason": "The peak of the absurdity.",
+      "description": "The boy hops from black rock to black rock across a glowing orange lava lake. His feet smoke.",
+      "place": "Erta Ale volcano, Afar",
+      "characters": [
+        "young_dad"
+      ],
+      "image_prompt": "Night at the Erta Ale volcano. A glowing orange-red lava lake with a black cracked crust fills the frame. The boy leaps from one black lava rock to the next in the centre of the frame, books held tight, small wisps of smoke rising from his bare feet. The orange glow lights his face.",
+      "seed": 107,
+      "duration_s": 8,
+      "lines": [
+        {
+          "speaker": "dad",
+          "en": "And then, the volcano. Erta Ale. I would jump from rock to rock over the lava. My feet were always on fire.",
+          "spoken": "ከዛ እሳተ ገሞራው፣ እርታሌ። ከድንጋይ ወደ ድንጋይ እየዘለልኩ ላቫውን እሻገር ነበር። እግሮቼ ሁሌም በእሳት የሚቃጠሉ ይመስሉ ነበር።",
+          "spoken_from_en": "And then, the volcano. Erta Ale. I would jump from rock to rock over the lava. My feet were always on fire."
+        }
+      ]
+    },
+    {
+      "id": "s08",
+      "reason": "The ending. The laugh is the anticlimax; \"again\" is the respect, because this was every day.",
+      "description": "The boy arrives at a small schoolhouse, proud, clothes soaked and dripping, smoke rising from his hair. A stern teacher stands at the door with arms crossed.",
+      "place": "A rural school",
+      "characters": [
+        "young_dad",
+        "teacher"
+      ],
+      "image_prompt": "A small rural schoolhouse with mud walls and a corrugated tin roof, morning light. The boy stands proudly in the centre of the frame in front of the door, clothes soaked and dripping water, wisps of smoke rising from his hair. The stern teacher stands in the doorway beside him with arms crossed, a thin stick in one hand.",
+      "seed": 108,
+      "duration_s": 9,
+      "lines": [
+        {
+          "speaker": "dad",
+          "en": "Finally, wet and smoking, I would reach school. And every day, my teacher would say...",
+          "spoken": "በመጨረሻም፣ በስብሼ እና ጨሼ ትምህርት ቤት እደርስ ነበር። እና በየቀኑ አስተማሪዬ እንዲህ ይሉኝ ነበር…",
+          "spoken_from_en": "Finally, wet and smoking, I would reach school. And every day, my teacher would say..."
+        },
+        {
+          "speaker": "teacher",
+          "en": "You're late again!",
+          "spoken": "ዛሬም እንደገና አረፈድክ!",
+          "spoken_from_en": "You're late again!"
+        }
+      ]
+    }
+  ]
+}

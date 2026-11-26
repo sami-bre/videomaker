@@ -1,0 +1,118 @@
+[
+  {
+    "id": "s01",
+    "start": 0.0,
+    "end": 12.34,
+    "lines": [
+      {
+        "index": 0,
+        "start": 0.3,
+        "end": 6.32,
+        "en": "Dad, school is so far. It's a ten-minute walk!"
+      },
+      {
+        "index": 1,
+        "start": 6.67,
+        "end": 11.74,
+        "en": "Ten minutes? When I was your age..."
+      }
+    ]
+  },
+  {
+    "id": "s02",
+    "start": 12.34,
+    "end": 19.85,
+    "lines": [
+      {
+        "index": 0,
+        "start": 12.64,
+        "end": 19.25,
+        "en": "Every morning, I would wake up before the rooster, tie my books with string, and start walking."
+      }
+    ]
+  },
+  {
+    "id": "s03",
+    "start": 19.85,
+    "end": 27.67,
+    "lines": [
+      {
+        "index": 0,
+        "start": 20.15,
+        "end": 27.07,
+        "en": "Not ten minutes. Hours. Hill after hill, with no shoes."
+      }
+    ]
+  },
+  {
+    "id": "s04",
+    "start": 27.67,
+    "end": 40.48,
+    "lines": [
+      {
+        "index": 0,
+        "start": 27.97,
+        "end": 39.88,
+        "en": "Then came the Blue Nile. I would hold my books over my head. There was always a hungry crocodile. I never stopped."
+      }
+    ]
+  },
+  {
+    "id": "s05",
+    "start": 40.48,
+    "end": 50.49,
+    "lines": [
+      {
+        "index": 0,
+        "start": 40.78,
+        "end": 49.89,
+        "en": "Next, the Chebera Churchura jungle. Elephants used to block the path, so I would walk right under them."
+      }
+    ]
+  },
+  {
+    "id": "s06",
+    "start": 50.49,
+    "end": 59.99,
+    "lines": [
+      {
+        "index": 0,
+        "start": 50.79,
+        "end": 59.39,
+        "en": "Then I would climb the Simien mountains. The geladas just used to watch me, without helping."
+      }
+    ]
+  },
+  {
+    "id": "s07",
+    "start": 59.99,
+    "end": 72.51,
+    "lines": [
+      {
+        "index": 0,
+        "start": 60.29,
+        "end": 71.91,
+        "en": "And then, the volcano. Erta Ale. I would jump from rock to rock over the lava. My feet were always on fire."
+      }
+    ]
+  },
+  {
+    "id": "s08",
+    "start": 72.51,
+    "end": 85.04,
+    "lines": [
+      {
+        "index": 0,
+        "start": 72.81,
+        "end": 82.03,
+        "en": "Finally, wet and smoking, I would reach school. And every day, my teacher would say..."
+      },
+      {
+        "index": 1,
+        "start": 82.38,
+        "end": 84.44,
+        "en": "You're late again!"
+      }
+    ]
+  }
+]

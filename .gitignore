@@ -1,0 +1,8 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+# Intermediate audio the film stage rebuilds on every run (65 MB each).
+outputs/film/narration.wav
+outputs/music/narration-track.wav
+.claude/settings.local.json

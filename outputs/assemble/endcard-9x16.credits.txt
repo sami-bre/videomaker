@@ -1,0 +1,8 @@
+Story, script and direction by a human
+Translation: Addis AI (Addis-፩-አሌፍ), fixed by a native speaker
+Voices: Gemini 3.8 Flash TTS, Gemini 3.8 Flash-Lite TTS
+Pictures: FLUX.2 klein 4B on Cloudflare Workers AI
+Motion: Grok Imagine Video 1.5 Lite via OpenRouter
+Music: ACE-Step 1.5 via WaveSpeed
+Edit: FFmpeg, no AI
+Pipeline code: written with Claude Code
