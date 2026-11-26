@@ -93,3 +93,15 @@ def test_a_project_runs_one_pipeline_at_a_time(client, monkeypatch):
     assert first.status_code == 200 and second.status_code == 409
     client.post(f"/api/runs/{first.json()['id']}/cancel")
     assert wait_until_finished(client, first.json()["id"]) == "cancelled"
+
+
+def test_a_remix_of_an_installed_example_shares_its_files_but_not_its_film(tmp_path, monkeypatch):
+    monkeypatch.setattr(projects, "PROJECTS_DIR", tmp_path / "projects")
+    monkeypatch.setattr(projects, "EXAMPLE_DIR", tmp_path / "example")
+    projects.install_example(workspace.REPO_ROOT, projects.EXAMPLE_DIR)
+    project_id = projects.create(projects.EXAMPLE_ID)
+    remix, example = projects.project_dir(project_id) / "outputs", projects.EXAMPLE_DIR / "outputs"
+
+    clip = next((example / "shots").glob("*.mp4"))
+    assert (remix / "shots" / clip.name).samefile(clip)
+    assert not (remix / "film" / "film-9x16.mp4").samefile(example / "film" / "film-9x16.mp4")

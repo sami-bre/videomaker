@@ -44,7 +44,19 @@ One page. The top shows the example film and how each shot was made. The studio 
 - run each stage with a button that first says what it will make, what it will reuse, and the rough cost;
 - watch the run's log live, listen to each voice line and music candidate, pick one, and download both films.
 
-There are no accounts. Each project lives at its own unguessable link. **People bring their own API keys**: keys stay in the browser and go only to that run's pipeline process, and they are blanked out of every log. A remix shares the example's generated files, so changing one line pays for one line. `docker build -t videomaker .` packages the whole thing; mount a volume at `/data` for projects. See [ARCHITECTURE.md](ARCHITECTURE.md#web-service).
+There are no accounts. Each project lives at its own unguessable link. **People bring their own API keys**: keys stay in the browser and go only to that run's pipeline process, and they are blanked out of every log. A remix shares the example's generated files, so changing one line pays for one line. See [ARCHITECTURE.md](ARCHITECTURE.md#web-service).
+
+With Docker (an 860 MB image: the app and FFmpeg, without the example's files):
+
+```bash
+docker build -t videomaker .
+docker volume create videomaker-data
+# once: copy the example film onto the volume from this checkout
+docker run --rm -v videomaker-data:/data -v "$PWD":/src:ro videomaker python -m server.install_example /src
+docker run -d -p 8000:8000 -v videomaker-data:/data videomaker
+```
+
+Skip the install step and the page offers blank projects only.
 
 ### API keys (`.env`)
 
@@ -81,7 +93,7 @@ make radio         # narration-only "radio cut" for a first audience test
 make shots-draft   # cheap 480p clips to check motion before paying for 720p
 make costs         # rebuild COSTS.md from runs.jsonl
 make smoke         # call every provider once and log it
-make test          # 18 tests on the logic that would silently break a film or leak a key
+make test          # 19 tests on the logic that would silently break a film or leak a key
 ```
 
 ## Make your own film
@@ -102,7 +114,7 @@ pipeline/              one module per stage, plus run.py (everything), estimate.
   common/              logging, retries, caching, workspace, provider clients
 server/                FastAPI web service: projects, runs, outputs
 web/                   React + Vite frontend: showcase and studio on one page
-tests/                 18 tests
+tests/                 19 tests
 runs.jsonl             one line per model call: model, params, seed, latency, cost, output
 outputs/               every generated image, audio file and video, kept for inspection
 assets/fonts/          end-card font and its licence

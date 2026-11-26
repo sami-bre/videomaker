@@ -75,6 +75,7 @@ def schema():
 
 @app.get("/api/showcase")
 def showcase():
+    known_project(projects.EXAMPLE_ID)
     return {"storyboard": projects.read_storyboard(projects.EXAMPLE_ID), "outputs": projects.outputs(projects.EXAMPLE_ID)}
 
 
@@ -82,6 +83,8 @@ def showcase():
 def create_project(body: NewProject):
     try:
         return {"id": projects.create(body.source)}
+    except projects.ProjectNotFound as exc:
+        raise HTTPException(404, str(exc))
     except ValueError as exc:
         raise HTTPException(400, str(exc))
 

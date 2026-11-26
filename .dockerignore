@@ -1,11 +1,10 @@
 .env
 .venv
 .git
+.claude
 data
+outputs
+runs.jsonl
 web/node_modules
 web/dist
 **/__pycache__
-outputs/smoke
-outputs/assemble
-outputs/keyframes/compare
-outputs/film/narration.wav

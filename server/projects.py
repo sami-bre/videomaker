@@ -1,6 +1,8 @@
 """Projects on disk. A project is one folder with its own storyboard.json, outputs/ and runs.jsonl.
 
-The example film is a read-only project whose folder is the repo itself.
+The example film is a read-only project. Its folder is the repo itself, or VIDEOMAKER_EXAMPLE
+when the generated files live elsewhere (in Docker, on the data volume, filled by
+`python -m server.install_example`).
 """
 
 import json
@@ -17,6 +19,7 @@ from pipeline.common import workspace
 
 PROJECTS_DIR = Path(os.environ.get("VIDEOMAKER_DATA") or workspace.REPO_ROOT / "data") / "projects"
 EXAMPLE_ID = "example"
+EXAMPLE_DIR = Path(os.environ.get("VIDEOMAKER_EXAMPLE") or workspace.REPO_ROOT)
 ID_PATTERN = re.compile(r"^[0-9a-f]{32}$")
 BLANK_STORYBOARD = Path(__file__).with_name("blank_storyboard.json")
 # These stages only ever write new, hash-named files, so a remix can share them with the
@@ -36,7 +39,9 @@ class ReadOnlyProject(PermissionError):
 
 def project_dir(project_id):
     if project_id == EXAMPLE_ID:
-        return workspace.REPO_ROOT
+        if not (EXAMPLE_DIR / "storyboard.json").exists():
+            raise ProjectNotFound("the example film is not installed")
+        return EXAMPLE_DIR
     if not ID_PATTERN.match(project_id) or not (PROJECTS_DIR / project_id).is_dir():
         raise ProjectNotFound(project_id)
     return PROJECTS_DIR / project_id
@@ -69,7 +74,7 @@ def create(source):
     folder = PROJECTS_DIR / project_id
     (folder / "outputs").mkdir(parents=True)
     if source == EXAMPLE_ID:
-        example = workspace.REPO_ROOT
+        example = project_dir(EXAMPLE_ID)
         shutil.copy2(example / "storyboard.json", folder / "storyboard.json")
         # The end-card credits look up which model made each reused file, so the log comes along.
         shutil.copy2(example / "runs.jsonl", folder / "runs.jsonl")
@@ -84,6 +89,18 @@ def create(source):
     meta = {"created": datetime.now(timezone.utc).isoformat(timespec="seconds"), "source": source}
     (folder / "project.json").write_text(json.dumps(meta), encoding="utf-8")
     return project_id
+
+
+def install_example(source, target):
+    """Copy the files the example film needs from a repo checkout into `target`."""
+    target.mkdir(parents=True, exist_ok=True)
+    for name in ("storyboard.json", "runs.jsonl"):
+        shutil.copy2(source / name, target / name)
+    for stage in SHAREABLE_STAGES:
+        shutil.copytree(source / "outputs" / stage, target / "outputs" / stage, dirs_exist_ok=True)
+    for name in COPIED_FILES:
+        (target / "outputs" / name).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source / "outputs" / name, target / "outputs" / name)
 
 
 def read_storyboard(project_id):

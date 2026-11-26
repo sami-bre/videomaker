@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api, describeError } from "./api";
+import { api, ApiError, describeError } from "./api";
 import { KeysDialog } from "./KeysDialog";
 import { loadSavedKeys } from "./keys";
 import { Showcase } from "./Showcase";
@@ -19,7 +19,10 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    api.showcase().then(setShowcase).catch((e) => setError(describeError(e).join(" ")));
+    api.showcase().then(setShowcase).catch((e) => {
+      // A server without the example film still serves blank projects.
+      if (!(e instanceof ApiError && e.status === 404)) setError(describeError(e).join(" "));
+    });
   }, []);
 
   async function newProject(source: "example" | "blank") {
@@ -58,10 +61,14 @@ export function App() {
           </>
         ) : (
           <div className="start">
-            <p>Start from the film above and change what you like (only what you change costs money), or start from an empty storyboard.</p>
+            <p>
+              {showcase
+                ? "Start from the film above and change what you like (only what you change costs money), or start from an empty storyboard."
+                : "Start from an empty storyboard."}
+            </p>
             <div className="row">
-              <button className="primary" onClick={() => newProject("example")}>Remix this film</button>
-              <button onClick={() => newProject("blank")}>Start blank</button>
+              {showcase && <button className="primary" onClick={() => newProject("example")}>Remix this film</button>}
+              <button className={showcase ? "" : "primary"} onClick={() => newProject("blank")}>Start blank</button>
             </div>
           </div>
         )}

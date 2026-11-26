@@ -99,14 +99,14 @@ Sound (`assemble.render_narration_track`, `duck_mix`, `film.normalize_loudness`)
 
 ## Tests
 
-`make test` runs 18 tests, aimed at the logic that would silently ruin a film, waste money or leak a key:
+`make test` runs 19 tests, aimed at the logic that would silently ruin a film, waste money or leak a key:
 - schema typos, duplicate ids and refusing to save an invalid storyboard;
 - the cache hash;
 - the timeline, subtitle splitting and clip fitting;
 - the clip-length guard;
 - which clip the film uses;
 - a reference change regenerating only the keyframes that show that character;
-- the web service: a project's files stay in its own folder, the estimate counts only what is not cached, keys never reach a log, an invalid storyboard is never saved, and one run per project.
+- the web service: a project's files stay in its own folder, the estimate counts only what is not cached, keys never reach a log, an invalid storyboard is never saved, one run per project, and a remix never shares a file the film stage rewrites.
 
 ## Web service
 
@@ -120,6 +120,7 @@ React + Vite page  ──HTTP + server-sent events──►  FastAPI (server/)  
 - **Keys.** The browser sends them in an `X-Provider-Keys` header with each run. They go only into that run's subprocess environment, never to disk, and every line it prints is scrubbed before it is logged or streamed. With `VIDEOMAKER_SERVICE=1`, the pipeline never reads the server's `.env`, so a missing key fails instead of spending the server's money. Stages read a key only when they are about to call a model, so a fully cached run needs no keys.
 - **Before a run.** `pipeline/estimate.py` counts, per stage, what would be made and what would be reused, with a list-price estimate and the keys needed. The server refuses a run that lacks a needed key or has a clip too short for its narration (`shots.length_problems`).
 - **Remix.** The example's hash-named outputs (narration, keyframes, shots, music) are hard-linked into the new project, and its `runs.jsonl` is copied so the end-card credits still know which model made each reused file. Folders written in place (`film/`, `assemble/`) are copied, never linked, so a remix can't overwrite the example's film.
+- **The example's files live outside the image.** The server reads the example from `VIDEOMAKER_EXAMPLE` (default: the repo). The Docker image sets it to `/data/example` on the data volume, filled once by `python -m server.install_example`. That keeps the image at about 860 MB. It also puts the example and the projects on the same disk, so a remix's hard links work instead of falling back to copies.
 - **Limits.** At most 2 runs at once on the server (FFmpeg is CPU-heavy); others queue. One run per project. Bring-your-own keys limit spend, so there are no quotas or project expiry.
 - **Progress.** `pipeline.run --events` prints one `@@{json}` line per stage start, end or failure. The server turns those and every log line into server-sent events.
 
