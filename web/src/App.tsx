@@ -1,13 +1,13 @@
 import { type ReactNode, useEffect, useState } from "react";
-import { Clapperboard, FilePlus2, KeyRound, Shuffle } from "lucide-react";
+import { FilePlus2, Shuffle } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { api, ApiError, describeError } from "./api";
 import { KeysDialog } from "./KeysDialog";
 import { loadSavedKeys } from "./keys";
 import { Showcase } from "./Showcase";
+import { SiteHeader } from "./SiteHeader";
 import { Studio } from "./Studio";
 import type { Outputs, Storyboard } from "./types";
 
@@ -47,21 +47,7 @@ export function App() {
 
   return (
     <div className="min-h-svh">
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-          <a href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-            <Clapperboard className="size-5 text-primary" /> videomaker
-          </a>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setShowKeys(true)}>
-              <KeyRound /> API keys {keyCount > 0 && <Badge variant="secondary">{keyCount}</Badge>}
-            </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <a href="https://github.com/sami-bre/videomaker" target="_blank" rel="noreferrer">GitHub</a>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <SiteHeader keyCount={keyCount} onKeys={() => setShowKeys(true)} />
 
       <main className="mx-auto max-w-6xl px-4">
         {showcase && <Showcase storyboard={showcase.storyboard} outputs={showcase.outputs} />}

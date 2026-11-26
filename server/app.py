@@ -20,7 +20,8 @@ from server.runs import KEY_NAMES, ProjectBusy, Runner
 
 WEB_DIST = workspace.REPO_ROOT / "web" / "dist"
 
-app = FastAPI(title="videomaker")
+# /docs is the how-to page in the frontend, so the API explorer lives under /api.
+app = FastAPI(title="videomaker", docs_url="/api/docs", redoc_url=None, openapi_url="/api/openapi.json")
 runner = Runner()
 
 

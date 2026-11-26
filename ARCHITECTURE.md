@@ -137,3 +137,5 @@ React + Vite page  ──HTTP + server-sent events──►  FastAPI (server/)  
 | POST | `/api/runs/{run}/cancel` | Stops the run |
 | GET | `/api/projects/{id}/costs` | Spend in this project, from its `runs.jsonl` |
 | GET | `/files/{id}/outputs/...` | Output files, with range requests for video |
+
+The frontend has two pages: `/` (showcase and studio) and `/docs/` (the how-to guide, `web/src/Docs.tsx`). FastAPI's own API explorer is at `/api/docs`.
