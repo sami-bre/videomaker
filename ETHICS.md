@@ -8,7 +8,7 @@
 - **The kid, the young dad and the teacher are invented too.** No photo of a real person was given to any model. The only images sent were our own generated keyframes and references.
 - **The voices are stock Gemini TTS voices** (`Algenib`, `Puck`, `Kore`). No voice was cloned, and no recording of a real person was uploaded anywhere.
 - **The story is a shared joke, not one family's private history.** It is the "when I was your age, I walked to school…" story many Ethiopian parents tell. No real names, villages or private family details appear in any prompt.
-- **User-test viewers.** Friends watched the cuts and gave reactions. Only their words are recorded, by initials, in DESIGN.md. They do not appear in the film.
+- **User-test viewers.** Friends watched the cuts and gave reactions. Only their names and words are recorded, in DESIGN.md, with the director's OK. They do not appear in the film.
 
 ## Style and other people's work
 
@@ -31,7 +31,7 @@
 ## Labelling plan
 
 1. **In the film:** a 3 s end card, "Made with AI", lists which model made each part. The list is read from `runs.jsonl` for the exact files in the film (`pipeline/endcard.py`), so it cannot name a model that wasn't used.
-2. **On the platform:** the AI-content disclosure is switched on when posting (YouTube, TikTok and Meta all have one).
+2. **On the platform:** the film is posted on LinkedIn. Any AI-content label the platform offers is switched on when posting.
 3. **In the post:** the text says the film was made with AI models, and how.
 4. **Provenance metadata: an honest gap.** Our FFmpeg assembly re-encodes every clip. Any C2PA manifest or embedded provenance metadata in the provider outputs **does not survive** into the final MP4. Some audio or video watermarks (such as SynthID) may survive re-encoding, but we did not verify which of our inputs carry one. The end card and the platform label are how we disclose AI use.
 

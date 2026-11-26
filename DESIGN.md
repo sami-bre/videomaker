@@ -63,30 +63,45 @@ The narration is the dad in the first person, written in English, translated to 
 
 ## User test 1: radio cut
 
-Done on 2026-11-26. Ethiopian friends my age watched the cut with narration (Amharic voices, English subtitles, placeholder drone). Their overall reaction: **"this looks funny."**
+Done on 2026-11-26. Four Ethiopian friends my age watched the cut with narration (Amharic voices, English subtitles, placeholder drone). Their overall reaction: **"this looks funny."**
 
-*TODO before submitting: add one row per person (initials are enough), with their own words. "It looks funny" only shows the comedy lands; it does not say where, so it gives the storyboard nothing to change yet.*
+| Person | What they said | What it told us |
+|---|---|---|
+| Mekdes | "That's so funny! Send it to me once you have the video." | The story works from the voice alone, before any picture exists, and she wants to see the film. |
+| Paul | "Soo funny! Even the lava 😄" | The escalation lands, and the biggest exaggeration, walking over lava, gets the laugh. We kept Erta Ale as the last and most extreme obstacle before school. |
+| Yonas | "You should post this somewhere!" | He would share it, which is the reaction the film is for. It is why the film is going public, as a LinkedIn post. |
+| Yusuf | "Made me laugh so hard. You know, but it should say *znjerowochu yayugn neber* (ዝንጀሮዎቹ ያዩኝ ነበር, 'the monkeys used to watch me'), not *znjerowochu ayugn* (ዝንጀሮዎቹ አዩኝ, 'the monkeys watched me')." | **Changed the script.** The dad is describing a routine, so Amharic needs the past habitual, not a one-time past. The English moved to "would" / "used to", and `translation_notes` asks for the past habitual. Shot s06 now says `ዝም ብለው ያዩኝ ነበር` (see below). |
 
-Changes made during the same pass, from the native-speaker director's own listening:
-- The routine had to read as **every day, not one trip**. The English moved to "would" / "used to", and `translation_notes` asks for the past habitual. This made "You're late **again**" land.
+Mekdes, Paul and Yonas gave praise, which shows the comedy lands but not where it could be better. Yusuf's note was the one that changed the storyboard.
+
+Changes made after this test:
+- **From Yusuf:** the routine had to read as **every day, not one trip**. The English moved to "would" / "used to", and `translation_notes` asks for the past habitual. In English the difference is subtle; in Amharic it is clear, and it is what makes "You're late **again**" land.
+
+From my own listening to the same cut, as the native speaker:
 - The teacher's line was rewritten to `ዛሬም እንደገና አረፈድክ!` ("late *again* today!") for a sharper punchline.
 - s05: the Portuguese Bridge was swapped for the Chebera Churchura jungle (elephants), a wilder escalation after the crocodile.
 - Style: the generic picture-book look (style A) was replaced by doodle stick figures with a **kuncho** and a **gabi** (E5), so the characters read as Ethiopian, not generic.
 
-Questions asked:
+Questions planned for the test:
 - Where did you laugh?
 - Did the ending land? What did you feel?
 - Was anything confusing or too long?
 - Would you send it to someone?
 
-| Person | What they said | What we change |
-|---|---|---|
-| | | |
-
 ## User test 2: near-final cut
 
-*Pending.*
+Done on 2026-11-26. I posted the finished 16:9 film in a Slack thread for my cohort, Ethiopian developers my age (the audience the film was made for), with one line: "a funny tribute to our parents who used to walk miles to reach school. Please take a look and tell me what you think." The thread got 13 replies within about 20 minutes, and the post got 27 🔥, 4 ❤️, 1 🙌 and 1 😆 reactions.
 
-| Person | What they said | What we change |
+| Person | What they said | What it tells us |
 |---|---|---|
-| | | |
+| Henok Husen | "so cool" | Positive, no detail. |
+| Tsion Habtesilassei | "So funny 😂. Great shots too" | The comedy lands, and the pictures hold up on their own. |
+| Robel B. | "I loveee this! 😂 It turns out every parent has a similar story!" | The intent landed exactly: a shared story, laugh plus recognition. Two people reacted 😅 to this reply. |
+| Haylemichael Tsega Gebrekidan | "he was a tourist not a student 🤣" | A new joke the viewer found himself: the "commute" tours Ethiopia's famous sights. The exaggeration reads as intended. |
+| Tigrem Sahilu | "😄😃😀" | Positive, no detail. |
+| Yabebal Fantaye | "This is great!" | Positive, no detail. |
+| Eyosiyas Mengesha | "the exaggeration 😂👌" | Names the device that makes it work: the escalation from shot to shot. |
+
+What changed because of it: **nothing in the storyboard.** Every reply was positive, nobody was confused, and the two specific comments (Robel, Eyosiyas) confirm the two things the film was built on: a story every parent tells, and escalation for the laugh. Haylemichael's "tourist" reading is a second joke we didn't plan, and it works for the film rather than against it.
+
+What this test can't show: the replies are short and public, so people may hold back criticism in front of the group, and nobody said where they stopped watching. A next test would ask two or three people privately where they laughed and whether any shot felt long.
