@@ -62,7 +62,7 @@ The lesson: for a language with less training data, the native speaker's ear is 
 
 ## 4. Suggested practices, tested honestly
 
-**One that beat my instinct: the narration-only radio cut.** My instinct was to start with pictures, because that's the exciting part. The radio cut felt like a step backwards. But it found the most important fix in the whole film, Yusuf's habitual tense, before I had paid for a single picture or clip. It also checked the comedy for free: three of four listeners laughed from the voice alone. If I had found the tense problem after the pictures and clips, the script change would still have been cheap (caching), but I would have judged the pictures against a weaker story.
+**One that beat my instinct: the narration-only radio cut.** My instinct was to start with pictures, because that's the exciting part. The radio cut felt like a step backwards. But it found the most important fix in the whole film, Yusuf's habitual tense. It also checked the comedy for free: three of four listeners laughed from the voice alone.
 
 **One that didn't work for me: the suggested translation models.** The suggested stack lists Gemini Flash for translation, and Flash-Lite for bulk calls. For Amharic it fell short every time I tested it: Flash-Lite got a kinship word wrong (E1), Gemini 3.8 Flash returned HTTP 503 "high demand" on every try (FAILURES.md), and Gemini 2.5 Flash was correct but flat (E3). What worked was a local provider built for Ethiopian languages, given the whole story as context. Gemini stayed useful, as the fallback and for the voices, but not as the translator.
 
