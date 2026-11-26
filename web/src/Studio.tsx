@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { api, ApiError, describeError } from "./api";
+import { api, ApiError, describeError, firstStep } from "./api";
 import { FilmSettings } from "./FilmSettings";
 import { ShotEditor } from "./ShotEditor";
 import type { Costs, Estimate, Outputs, RunEvent, RunSummary, Shot, StageName, Storyboard } from "./types";
@@ -146,7 +146,7 @@ export function Studio({ projectId, keys, onNeedKeys }: Props) {
       attach(await api.startRun(projectId, step.stages, step.quality, keys));
     } catch (e) {
       const missing = e instanceof ApiError && (e.detail as { missing_keys?: string[] })?.missing_keys;
-      toast.error(missing ? "API keys needed" : "Could not start", {
+      toast.error(missing ? "API keys needed" : "Not ready yet", {
         description: describeError(e).join("\n"),
         action: missing ? { label: "Add keys", onClick: onNeedKeys } : undefined,
       });
@@ -220,17 +220,18 @@ export function Studio({ projectId, keys, onNeedKeys }: Props) {
             {STEPS.map((step, i) => {
               const est = stepEstimate(step);
               const state = stepState(step);
+              const waiting = est?.waiting_for ?? [];
               const Icon = step.icon;
               return (
                 <button
                   key={step.label}
-                  disabled={running}
-                  title={step.help}
+                  disabled={running || waiting.length > 0}
+                  title={waiting.length ? waiting.map(firstStep).join("\n") : step.help}
                   onClick={() => start(step)}
                   className={cn(
                     "group flex flex-col gap-2 rounded-xl border bg-card p-3 text-left transition hover:border-primary/60 hover:shadow-sm disabled:pointer-events-none",
                     state === "started" && "border-primary ring-2 ring-primary/30",
-                    running && state !== "started" && "opacity-60",
+                    (running && state !== "started" || waiting.length > 0) && "opacity-60",
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -241,7 +242,11 @@ export function Studio({ projectId, keys, onNeedKeys }: Props) {
                   </div>
                   <span className="text-sm font-medium">{step.label}</span>
                   <span className="text-xs text-muted-foreground">
-                    {est ? (
+                    {waiting.length > 0 ? (
+                      waiting.map((need) => <span key={need} className="block text-amber-600 dark:text-amber-400">{firstStep(need)}</span>)
+                    ) : step.stages[0] === "film" ? (
+                      "Edits both films · free"
+                    ) : est ? (
                       <>
                         {est.to_make > 0 ? <span className="font-medium text-foreground">{est.to_make} to make</span> : "Up to date"}
                         {est.cached > 0 && ` · ${est.cached} cached`}
@@ -389,21 +394,22 @@ export function Studio({ projectId, keys, onNeedKeys }: Props) {
       <Card>
         <CardHeader>
           <CardTitle>Music</CardTitle>
-          <CardDescription>Listen to each candidate and pick the one the film uses. Then save and run Film.</CardDescription>
+          <CardDescription>Listen to each candidate and pick the one the film uses (the first, until you pick). Then save and run Film.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {outputs?.music.length ? outputs.music.map(({ seed, url }) => {
-            const chosen = storyboard.music?.chosen_seed === seed;
+            const picked = storyboard.music?.chosen_seed !== undefined;
+            const chosen = (storyboard.music?.chosen_seed ?? storyboard.music?.seeds[0]) === seed;
             return (
               <div key={seed} className={cn("flex flex-col gap-3 rounded-xl border p-4", chosen && "border-primary ring-2 ring-primary/30")}>
                 <div className="flex items-center justify-between">
                   <span className="font-medium">Seed {seed}</span>
-                  {chosen && <Badge>Chosen</Badge>}
+                  {chosen && <Badge variant={picked ? "default" : "secondary"}>{picked ? "Chosen" : "Default"}</Badge>}
                 </div>
                 {url ? <audio src={url} controls preload="none" className="w-full" /> : <p className="text-sm text-muted-foreground">Not made yet. Run Music.</p>}
-                <Button variant={chosen ? "secondary" : "outline"} size="sm" disabled={!url || chosen}
+                <Button variant={chosen && picked ? "secondary" : "outline"} size="sm" disabled={!url || (chosen && picked)}
                   onClick={() => edit({ ...storyboard, music: { ...storyboard.music!, chosen_seed: seed } })}>
-                  {chosen ? "In the film" : "Use this one"}
+                  {chosen && picked ? "In the film" : "Use this one"}
                 </Button>
               </div>
             );

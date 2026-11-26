@@ -57,6 +57,11 @@ def project_estimate(project_id, stages, quality):
         return storyboard, estimate.estimate(storyboard, stages, quality)
 
 
+def unmet_needs(project_id, storyboard, stages):
+    with workspace.use(known_project(project_id)):
+        return [problem for i, stage in enumerate(stages) for problem in estimate.waiting_for(storyboard, stage, coming=stages[:i])]
+
+
 def clip_length_problems(project_id, storyboard, stages):
     if "shots" not in stages:
         return []
@@ -135,6 +140,9 @@ async def start_run(project_id: str, body: RunRequest, x_provider_keys: str = He
     missing = sorted({k for stage in result.values() for k in stage["needs_keys"]} - set(keys))
     if missing:
         raise HTTPException(400, {"missing_keys": missing})
+    needs = await asyncio.to_thread(unmet_needs, project_id, storyboard, stages)
+    if needs:
+        raise HTTPException(400, {"waiting_for": needs})
     problems = await asyncio.to_thread(clip_length_problems, project_id, storyboard, stages)
     if problems:
         raise HTTPException(400, {"problems": problems})

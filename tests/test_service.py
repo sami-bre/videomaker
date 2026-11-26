@@ -59,11 +59,11 @@ def test_a_remix_with_one_edited_line_needs_one_new_voice_line_and_no_new_pictur
 
 
 def test_keys_reach_the_pipeline_but_never_its_log(client, monkeypatch):
-    fake_pipeline(monkeypatch, "import os; print('using', os.environ['GEMINI_API_KEY'])")
+    fake_pipeline(monkeypatch, "import os; print('using', os.environ['CLOUDFLARE_API_TOKEN'])")
     project_id = client.post("/api/projects", json={"source": "blank"}).json()["id"]
+    keys = {"CLOUDFLARE_ACCOUNT_ID": "account-123", "CLOUDFLARE_API_TOKEN": "secret-key-123"}
     run = client.post(
-        f"/api/projects/{project_id}/runs", json={"stages": ["film"]},
-        headers={"X-Provider-Keys": json.dumps({"GEMINI_API_KEY": "secret-key-123"})},
+        f"/api/projects/{project_id}/runs", json={"stages": ["keyframes"]}, headers={"X-Provider-Keys": json.dumps(keys)},
     ).json()
 
     assert wait_until_finished(client, run["id"]) == "done"
@@ -87,8 +87,9 @@ def test_a_project_runs_one_pipeline_at_a_time(client, monkeypatch):
     fake_pipeline(monkeypatch, "import time; time.sleep(1)")
     project_id = client.post("/api/projects", json={"source": "blank"}).json()["id"]
 
-    first = client.post(f"/api/projects/{project_id}/runs", json={"stages": ["film"]})
-    second = client.post(f"/api/projects/{project_id}/runs", json={"stages": ["film"]})
+    keys = {"X-Provider-Keys": json.dumps({"CLOUDFLARE_ACCOUNT_ID": "account-123", "CLOUDFLARE_API_TOKEN": "token-123"})}
+    first = client.post(f"/api/projects/{project_id}/runs", json={"stages": ["keyframes"]}, headers=keys)
+    second = client.post(f"/api/projects/{project_id}/runs", json={"stages": ["keyframes"]}, headers=keys)
 
     assert first.status_code == 200 and second.status_code == 409
     client.post(f"/api/runs/{first.json()['id']}/cancel")
@@ -105,3 +106,17 @@ def test_a_remix_of_an_installed_example_shares_its_files_but_not_its_film(tmp_p
     clip = next((example / "shots").glob("*.mp4"))
     assert (remix / "shots" / clip.name).samefile(clip)
     assert not (remix / "film" / "film-9x16.mp4").samefile(example / "film" / "film-9x16.mp4")
+
+
+def test_a_step_is_refused_until_the_steps_it_needs_have_run(client):
+    project_id = client.post("/api/projects", json={"source": "blank"}).json()["id"]
+
+    film_alone = client.post(f"/api/projects/{project_id}/runs", json={"stages": ["film"]})
+    assert film_alone.status_code == 400
+    assert film_alone.json()["detail"]["waiting_for"] == [
+        "Voice: 1 voice line missing", "Motion: 1 shot without a clip", "Music: the film's music is not made yet",
+    ]
+
+    storyboard = projects.read_storyboard(project_id)
+    with workspace.use(projects.project_dir(project_id)):
+        assert estimate.waiting_for(storyboard, "film", coming=["script", "narration", "keyframes", "shots", "music"]) == []

@@ -42,7 +42,7 @@ export type Outputs = {
 
 export type StageName = "script" | "narration" | "keyframes" | "shots" | "music" | "film";
 
-export type StageEstimate = { to_make: number; cached: number; est_usd: number; needs_keys: string[] };
+export type StageEstimate = { to_make: number; cached: number; est_usd: number; needs_keys: string[]; waiting_for: string[] };
 
 export type Estimate = { stages: Partial<Record<StageName, StageEstimate>>; problems: string[] };
 

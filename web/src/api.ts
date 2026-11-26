@@ -40,8 +40,14 @@ export const api = {
 
 export function describeError(error: unknown): string[] {
   if (!(error instanceof ApiError)) return [String(error)];
-  const detail = error.detail as { errors?: string[]; missing_keys?: string[]; problems?: string[] } | string;
+  const detail = error.detail as { errors?: string[]; missing_keys?: string[]; problems?: string[]; waiting_for?: string[] } | string;
   if (typeof detail === "string") return [detail];
   if (detail?.missing_keys) return [`Add these keys first: ${detail.missing_keys.join(", ")}`];
+  if (detail?.waiting_for) return detail.waiting_for.map(firstStep);
   return detail?.errors ?? detail?.problems ?? [error.message];
+}
+
+/** "Voice: 1 voice line missing" -> "Run Voice first: 1 voice line missing" */
+export function firstStep(need: string) {
+  return need.replace(/^([^:]+): /, "Run $1 first: ");
 }

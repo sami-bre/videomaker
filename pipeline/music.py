@@ -1,5 +1,6 @@
 """Music stage: score candidates from ACE-Step 1.5 on WaveSpeed, one per seed in the
-storyboard's `music.seeds`. Listen, then set `music.chosen_seed` (and `why_chosen`).
+storyboard's `music.seeds`. Listen, then set `music.chosen_seed` (and `why_chosen`). Until
+you do, the film uses the first seed's candidate, so a first full run still ends in a film.
 
 Run: uv run python -m pipeline.music [path/to/storyboard.json]
 
@@ -36,8 +37,13 @@ def candidate_path(storyboard, seed):
     return cached_path(STAGE, f"seed{seed}", candidate_inputs(storyboard, seed), ".mp3")
 
 
+def chosen_seed(storyboard):
+    cue = storyboard.get("music", {})
+    return cue.get("chosen_seed", cue["seeds"][0] if cue.get("seeds") else None)
+
+
 def chosen_track(storyboard):
-    seed = storyboard.get("music", {}).get("chosen_seed")
+    seed = chosen_seed(storyboard)
     return candidate_path(storyboard, seed) if seed is not None else None
 
 
@@ -64,8 +70,8 @@ def run(path=sb.DEFAULT_PATH):
         if not out.exists():
             generate(require_key("WAVESPEED_API_KEY"), storyboard, seed)
         print(f"seed {seed}: {status} -> {relative(out)}")
-    chosen = storyboard["music"].get("chosen_seed")
-    print(f"music: {film_length_s(storyboard)} s per candidate; chosen seed: {chosen if chosen is not None else 'none yet'}")
+    chosen = "" if "chosen_seed" in storyboard["music"] else " (first seed until you choose one)"
+    print(f"music: {film_length_s(storyboard)} s per candidate; film uses seed {chosen_seed(storyboard)}{chosen}")
 
 
 if __name__ == "__main__":

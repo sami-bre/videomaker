@@ -18,9 +18,10 @@ UNKNOWN_YET = (FileNotFoundError, KeyError, sb.StoryboardError)
 
 def exists(make_path):
     try:
-        return make_path().exists()
+        path = make_path()
     except UNKNOWN_YET:
         return False
+    return path is not None and path.exists()
 
 
 def count(checks):
@@ -76,6 +77,64 @@ def film_estimate(storyboard, quality):
     return 0, 0, 0.0, []
 
 
+def plural(count, word):
+    return f"{count} {word}" + ("" if count == 1 else "s")
+
+
+def missing_translations(storyboard):
+    count = sum(1 for shot in storyboard["shots"] for line in shot["lines"] if "spoken" not in line)
+    return count and f"{plural(count, 'line')} not translated yet"
+
+
+def missing_voices(storyboard):
+    count = sum(1 for s, i in list_lines(storyboard) if not exists(lambda s=s, i=i: narration.line_audio_path(storyboard, s, i)))
+    return count and f"{plural(count, 'voice line')} missing"
+
+
+def missing_keyframes(storyboard):
+    count = sum(1 for s in storyboard["shots"] if not exists(lambda s=s: keyframes.keyframe_path(storyboard, s)))
+    return count and f"{plural(count, 'shot')} without a picture"
+
+
+def missing_clips(storyboard):
+    count = sum(1 for s in storyboard["shots"] if not exists(lambda s=s: shots.best_clip(storyboard, s)))
+    return count and f"{plural(count, 'shot')} without a clip"
+
+
+def missing_music(storyboard):
+    if music.chosen_seed(storyboard) is None:
+        return "no music in the storyboard"
+    return not exists(lambda: music.chosen_track(storyboard)) and "the film's music is not made yet"
+
+
+# For each stage: (the earlier stage that provides it, a check returning what is missing or a falsy value).
+NEEDS = {
+    "script": [],
+    "narration": [("script", missing_translations)],
+    "keyframes": [],
+    "shots": [("keyframes", missing_keyframes)],
+    "music": [("narration", missing_voices)],
+    "film": [("narration", missing_voices), ("shots", missing_clips), ("music", missing_music)],
+}
+
+
+def waiting_for(storyboard, stage, coming=()):
+    """What `stage` needs from earlier stages that is not made yet, e.g. ["Voice: 1 voice line missing"].
+
+    Needs met by a stage in `coming` (earlier in the same run) are left out. Checking up
+    front means a run is refused with a plain reason instead of failing partway.
+    """
+    problems = []
+    for provider, check in NEEDS[stage]:
+        if provider not in coming:
+            missing = check(storyboard)
+            if missing:
+                problems.append(f"{STEP_NAMES[provider]}: {missing}")
+    return problems
+
+
+STEP_NAMES = {"script": "Translate", "narration": "Voice", "keyframes": "Pictures", "shots": "Motion", "music": "Music", "film": "Film"}
+
 ESTIMATORS = {
     "script": script_estimate,
     "narration": narration_estimate,
@@ -91,7 +150,10 @@ def estimate(storyboard, stages=tuple(run.STAGES), quality="final"):
     result = {}
     for name in stages:
         to_make, cached, usd, keys = ESTIMATORS[name](storyboard, quality)
-        result[name] = {"to_make": to_make, "cached": cached, "est_usd": round(usd, 4), "needs_keys": keys if to_make else []}
+        result[name] = {
+            "to_make": to_make, "cached": cached, "est_usd": round(usd, 4),
+            "needs_keys": keys if to_make else [], "waiting_for": waiting_for(storyboard, name),
+        }
     return result
 
 
