@@ -1,6 +1,6 @@
 STORYBOARD ?= storyboard.json
 
-.PHONY: film setup validate radio shots-draft costs smoke test serve web web-dev
+.PHONY: film setup validate radio shots-draft costs smoke test serve web web-dev report
 
 # The whole pipeline: storyboard -> script -> narration -> keyframes -> shots -> music -> film.
 film:
@@ -42,3 +42,7 @@ web:
 # Frontend with hot reload on http://localhost:5173; it talks to `make serve`.
 web-dev:
 	cd web && npm run dev
+
+# report/REPORT.md -> report/report.pdf (needs Chrome or Chromium).
+report:
+	uv run python report/render.py

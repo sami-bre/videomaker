@@ -1,0 +1,35 @@
+@font-face { font-family: "Report"; src: url("../assets/fonts/Ubuntu-L.ttf"); font-weight: 400; }
+@font-face { font-family: "Report"; src: url("../assets/fonts/Ubuntu-B.ttf"); font-weight: 700; }
+
+@page {
+  size: A4;
+  margin: 18mm 18mm 20mm;
+  @bottom-right { content: counter(page) " / " counter(pages); font: 8pt "Report", sans-serif; color: #888; }
+}
+
+:root { --ink: #222; --muted: #5d625a; --accent: #b5532a; --line: #d8dccf; --paper-tint: #f1f3ec; }
+
+html { font: 10pt/1.5 "Report", "Noto Sans Ethiopic", sans-serif; color: var(--ink); }
+body { margin: 0; }
+:lang(am), .ethiopic { font-family: "Noto Sans Ethiopic", "Report", sans-serif; }
+
+h1 { font-size: 21pt; line-height: 1.2; margin: 0 0 4pt; }
+h1 + p { color: var(--muted); margin-top: 0; }
+h2 { font-size: 13pt; color: var(--accent); margin: 18pt 0 6pt; padding-bottom: 3pt; border-bottom: 1.5pt solid var(--line); break-after: avoid; }
+h3 { font-size: 11pt; margin: 12pt 0 4pt; break-after: avoid; }
+p, li { orphans: 3; widows: 3; }
+ul, ol { padding-left: 16pt; margin: 4pt 0 8pt; }
+li { margin: 2pt 0; }
+a { color: var(--accent); text-decoration: none; word-break: break-all; }
+strong { font-weight: 700; }
+code { font-family: "DejaVu Sans Mono", "Noto Sans Ethiopic", monospace; font-size: 8.5pt; background: var(--paper-tint); padding: 0 2pt; border-radius: 2pt; }
+
+blockquote { margin: 8pt 0; padding: 6pt 10pt; border-left: 3pt solid var(--accent); background: var(--paper-tint); break-inside: avoid; }
+blockquote p { margin: 0; }
+p:has(+ blockquote), p:has(+ ul), p:has(+ ol) { break-after: avoid; }
+
+table { border-collapse: collapse; width: 100%; margin: 6pt 0 10pt; font-size: 9pt; break-inside: avoid; }
+th, td { text-align: left; vertical-align: top; padding: 3pt 6pt; border-bottom: 0.75pt solid var(--line); }
+th { background: var(--paper-tint); }
+thead:has(th:empty) { display: none; }
+td:first-child { white-space: nowrap; font-weight: 700; }
